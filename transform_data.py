@@ -70,9 +70,16 @@ def process_and_save_npz(npz_file, output_path):
             raw_data = data[key][:4]
         else:
             raw_data = data[key][4:]
-            
+        
+        # Create a subfolder for the key
+        key_folder = os.path.join(output_path, key)
+        os.makedirs(key_folder, exist_ok=True)
+        
+        # Process the raw data to obtain an sRGB image
         srgb_image = process_image(raw_data)
-        output_file = os.path.join(output_path, f"{os.path.basename(npz_file).replace('.npz', '')}_{key}.png")
+        
+        # Save the image in the key's folder
+        output_file = os.path.join(key_folder, f"{os.path.basename(npz_file).replace('.npz', '')}.png")
         imageio.imwrite(output_file, np.clip(srgb_image, 0, 255).astype(np.uint8))
 
 root_dir = 'data/NPZ_data'
