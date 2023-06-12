@@ -1,6 +1,7 @@
-from pathlib import Path
-import fiftyone as fo
 import argparse
+from pathlib import Path
+
+import fiftyone as fo
 
 
 def get_sample_tags(sample_filepath: Path):
@@ -8,7 +9,7 @@ def get_sample_tags(sample_filepath: Path):
     is_train = "training_npz" in path_tokens
     is_dynamic = is_train and "dynamic" in path_tokens
     is_static = is_train and "static_translate" in path_tokens
-    is_white_balanced = sample_filepath.name.endswith("wb_grayworld.png")
+    is_white_balanced = sample_filepath.name[: -len(".npz")].endswith("wb_grayworld")
 
     sample_tags = []
     if is_train:
@@ -42,7 +43,9 @@ def add_samples_for_split(dataset: fo.Dataset, split: list[Path]):
             group=group.element("hdr"),
         )
         hdr_sample["exposure"] = "hdr"
-        hdr_sample["white_balanced"] = "white_balanced" if is_white_balanced else "no_white_balance"
+        hdr_sample["white_balanced"] = (
+            "white_balanced" if is_white_balanced else "no_white_balance"
+        )
         hdr_sample["photo_id"] = photo_id
 
         sht_sample_path = (
@@ -54,7 +57,9 @@ def add_samples_for_split(dataset: fo.Dataset, split: list[Path]):
             group=group.element("sht"),
         )
         sht_sample["exposure"] = "sht"
-        sht_sample["white_balanced"] = "white_balanced" if is_white_balanced else "no_white_balance"
+        sht_sample["white_balanced"] = (
+            "white_balanced" if is_white_balanced else "no_white_balance"
+        )
         sht_sample["photo_id"] = photo_id
 
         mid_sample_path = (
@@ -66,9 +71,10 @@ def add_samples_for_split(dataset: fo.Dataset, split: list[Path]):
             group=group.element("mid"),
         )
         mid_sample["exposure"] = "mid"
-        mid_sample["white_balanced"] = "white_balanced" if is_white_balanced else "no_white_balance"
+        mid_sample["white_balanced"] = (
+            "white_balanced" if is_white_balanced else "no_white_balance"
+        )
         mid_sample["photo_id"] = photo_id
-
 
         lng_sample_path = (
             hdr_sample_path.parent.parent / "lng" / hdr_sample_path.name
@@ -79,21 +85,27 @@ def add_samples_for_split(dataset: fo.Dataset, split: list[Path]):
             group=group.element("lng"),
         )
         lng_sample["exposure"] = "lng"
-        lng_sample["white_balanced"] = "white_balanced" if is_white_balanced else "no_white_balance"
+        lng_sample["white_balanced"] = (
+            "white_balanced" if is_white_balanced else "no_white_balance"
+        )
         lng_sample["photo_id"] = photo_id
 
-        dataset.add_samples([hdr_sample, sht_sample, mid_sample, lng_sample])
+        dataset.add_samples(
+            [hdr_sample, sht_sample, mid_sample, lng_sample],
+        )
 
 
-def add_samples(dataset: fo.Dataset):
+def add_samples(dataset: fo.Dataset, data_root_dir: str):
     training_dynamic_hdr = list(
-        Path("Mobile-HDR/PNG_data/training_npz/dynamic/hdr").glob("**/*.png")
+        Path(f"{data_root_dir}/training_npz/dynamic/hdr").glob("**/*.[pPjJ][nNpP][gG]")
     )
     training_static_hdr = list(
-        Path("Mobile-HDR/PNG_data/training_npz/static_translate/hdr").glob("**/*.png")
+        Path(f"{data_root_dir}/training_npz/static_translate/hdr").glob(
+            "**/*.[pPjJ][nNpP][gG]"
+        )
     )
     test_with_gt_hdr = list(
-        Path("Mobile-HDR/PNG_data/test_npz/test_withGT/hdr").glob("**/*.png")
+        Path(f"{data_root_dir}/test_npz/test_withGT/hdr").glob("**/*.[pPjJ][nNpP][gG]")
     )
 
     add_samples_for_split(dataset, training_dynamic_hdr)
@@ -101,32 +113,32 @@ def add_samples(dataset: fo.Dataset):
     add_samples_for_split(dataset, test_with_gt_hdr)
 
 
-def create_dataset_and_add_samples(dataset_name: str):
+def create_dataset_and_add_samples(dataset_name: str, data_root_dir: str):
     print(f"creating dataset {dataset_name}")
     dataset = fo.Dataset(name=dataset_name)
     dataset.persistent = True
 
-    add_samples(dataset)
+    add_samples(dataset, data_root_dir)
     dataset.save()
 
     return dataset
 
 
-def main(dataset_name: str, launch_app: bool, reimport: bool):
+def main(dataset_name: str, data_root_dir: str, launch_app: bool, reimport: bool):
     # check if dataset exists
     if dataset_name in fo.list_datasets():
         if reimport:
             print("deleting existing dataset")
             fo.delete_dataset(dataset_name)
 
-            dataset = create_dataset_and_add_samples(dataset_name)
+            dataset = create_dataset_and_add_samples(dataset_name, data_root_dir)
         else:
             print(
                 f"using existing dataset {dataset_name}. skipping files import. use --reimport to reimport"
             )
             dataset = fo.load_dataset(dataset_name)
     else:
-        dataset = create_dataset_and_add_samples(dataset_name)
+        dataset = create_dataset_and_add_samples(dataset_name, data_root_dir)
 
     print(f"dataset {dataset_name} available with {len(dataset)} samples")
 
@@ -143,6 +155,12 @@ if __name__ == "__main__":
         "--dataset_name",
         help="Name of the dataset",
         default="Mobile-HDR",
+    )
+
+    parser.add_argument(
+        "--data_root_dir",
+        help="Root directory of PNG/JPG files. Should contain training_npz and test_npz",
+        default="Mobile-HDR/JPG_data",
     )
 
     parser.add_argument(
@@ -165,4 +183,4 @@ if __name__ == "__main__":
         print(f"unknown args: {unknown_args}")
         exit(1)
 
-    main(args.dataset_name, args.launch_app, args.reimport)
+    main(args.dataset_name, args.data_root_dir, args.launch_app, args.reimport)

@@ -38,6 +38,13 @@ python transform_data.py
 and another with white-balancing using gray-world heuristics.**
 
 
+Optionally, for minimizing storage space print and optimizing speed when working with Fiftyone, you can convert the big PNG files into JPG fils by running the following:
+```
+source venv/bin/activate 
+
+python compress_pngs.py
+```
+
 ### Importing into Fiftyone
 
 ```
