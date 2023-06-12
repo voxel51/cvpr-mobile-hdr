@@ -32,6 +32,10 @@ pip install -r requirements.txt
 python transform_data.py
 ```
 
+**Note: The script uses a gamma correction factor of 2.2 and produces two images per exposure type, one with no white balancing,
+and another with white-balancing using gray-world heuristics.**
+
+
 ### Importing into Fiftyone
 
 ```
