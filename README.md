@@ -3,7 +3,7 @@
 
 ![gif](./media/mobile-hdr-small.gif)
 
-This repository contains Python code that ingests the [Joint HDR Denoising and Fusion: A Real-World Mobile HDR Image Dataset](https://drive.google.com/drive/folders/1ydUpdeThM2yoZJiCXRB3ZHDVPIykbt2o) into Fiftyone.
+This repository contains Python code that ingests the [Joint HDR Denoising and Fusion: A Real-World Mobile HDR Image Dataset](https://github.com/shuaizhengliu/Joint-HDRDN) into Fiftyone.
 
 ## Steps
 
