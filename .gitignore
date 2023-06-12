@@ -1,2 +1,8 @@
 data
+Mobile-HDR
 venv
+.vscode
+.ipynb_checkpoints
+.swp
+test_output
+venv_

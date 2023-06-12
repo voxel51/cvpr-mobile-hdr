@@ -1,0 +1,4 @@
+opencv-python-headless >= 4.7.0.72
+imageio >= 2.31.0
+numpy >= 1.24.3
+fiftyone >= 0.21.0
