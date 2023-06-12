@@ -148,7 +148,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--launch_app",
         help="Whether to launch the app",
-        default=False,
+        default=True,
         action="store_true",
     )
 

@@ -9,14 +9,6 @@ import numpy as np
 WHITE_BALANCING_STRATEGY_GRAYWORLD = "grayworld"
 WHITE_BALANCING_STRATEGY_NONE = "none"
 
-"""
-This script converts the NPZ files to PNG files.
-
-- Each NPZ file contains 4 raw images, one for each exposure type (short, medium, long, HDR).
-- The NPZ files contain raw data from the camera sensor.
-- The PNG files contain sRGB images.
-"""
-
 
 def convert_raw_to_srgb(raw_data, gamma_factor, white_balancing_strategy):
     """
