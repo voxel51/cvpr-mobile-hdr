@@ -9,6 +9,8 @@ This repository contains Python code that ingests the [Joint HDR Denoising and F
 
 ### Transforming data into sRGB
 
+This script converts npz into raw files, and debayers the raw files into PNGs using common heuristics.
+
 Make sure you have all the npz files in your local directory.
 ```
 ├── Mobile-HDR
